@@ -1,6 +1,7 @@
 "use server";
 import { db } from "@/lib/db";
 import { currentUser } from "@clerk/nextjs/server";
+import { success } from "zod";
 
 export const onBoardUser = async () => {
   try {
@@ -90,3 +91,33 @@ export const onBoardUser = async () => {
     };
   }
 };
+
+export const currentUserRole = async () => {
+  try {
+    const user = await currentUser();
+
+    if (!user) {
+      return {
+        success: false,
+        error: "No authenticated user found"
+      }
+    }
+
+    const { id } = user;
+    const userRole = await db.user.findUnique({
+      where: {
+        clerkId: id
+      },
+      select: {
+        role: true
+      }
+    })
+    return userRole.role
+  } catch (error) {
+    console.error("Error fetching user role:", error);
+    return {
+      success: false,
+      error: "An error occurred while fetching user role",
+    };
+  }
+}
