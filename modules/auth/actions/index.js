@@ -121,3 +121,22 @@ export const currentUserRole = async () => {
     };
   }
 }
+
+export const getCurrentUser = async () => {
+  try {
+    const user = await currentUser();
+
+    const dbUser = await db.user.findUnique({
+      where: {
+        clerkId: user.id
+      },
+      select: {
+        id: true
+      }
+    })
+    return dbUser;
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    return null;
+  }
+};
