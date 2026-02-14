@@ -1,3 +1,5 @@
+import { db } from "@/lib/db";
+import { getJudge0LanguageId, pollBatchResults, submitBatch } from "@/lib/judge0";
 import { currentUserRole, getCurrentUser } from "@/modules/auth/actions";
 import { UserRole } from "@prisma/client";
 import { NextResponse } from "next/server";
@@ -44,11 +46,11 @@ export async function POST(request) {
             }
 
             // prepare judge0 submissions for all test cases 
-            const submissions = testCases.map((input, output) => ({
+            const submissions = testCases.map((testCase) => ({
                 source_code: solutionCode,
                 language_id: languageId,
-                stdin: input,
-                expected_output: output,
+                stdin: testCase.input,
+                expected_output: testCase.output,
             }))
 
             // submit all test cases in one batch 
